@@ -67,9 +67,7 @@ class VideoState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		if (controls.ACCEPT #if android
-		FlxG.android.preventDefaultKeys = [BACK];
-		#end && video.isPlaying)
+		if (controls.ACCEPT #if android || FlxG.android.justReleased.BACK #end && video.isPlaying)
 			video.onEndReached.dispatch();
 	}
 	#end
