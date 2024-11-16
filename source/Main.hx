@@ -13,6 +13,10 @@ import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import haxe.io.Path;
+#if android
+import android.content.Context;
+#end
 
 class Main extends Sprite
 {
@@ -34,12 +38,24 @@ class Main extends Sprite
 		// quick checks 
 
 		Lib.current.addChild(new Main());
+		#if cpp
+		cpp.NativeGc.enable(true);
+		#elseif hl
+		hl.Gc.enable(true);
+		#end
 	}
 
 	public function new()
 	{
 		super();
 
+		// Credits to MAJigsaw77 (he's the og author for this code)
+		#if android
+		Sys.setCwd(Path.addTrailingSlash(Context.getExternalFilesDir()));
+		#elseif ios
+		Sys.setCwd(lime.system.System.applicationStorageDirectory);
+		#end
+		
 		if (stage != null)
 		{
 			init();
@@ -60,61 +76,26 @@ class Main extends Sprite
 		setupGame();
 	}
 
-	public static var webmHandler:WebmHandler;
-
 	private function setupGame():Void
 	{
-		var stageWidth:Int = Lib.current.stage.stageWidth;
-		var stageHeight:Int = Lib.current.stage.stageHeight;
-
-		if (zoom == -1)
-		{
-			var ratioX:Float = stageWidth / gameWidth;
-			var ratioY:Float = stageHeight / gameHeight;
-			zoom = Math.min(ratioX, ratioY);
-			gameWidth = Math.ceil(stageWidth / zoom);
-			gameHeight = Math.ceil(stageHeight / zoom);
-		}
-
-		#if !debug
-		initialState = TitleState;
-		#end
-
-		game = new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
-
-		addChild(game);
-
-		var ourSource:String = "assets/videos/DO NOT DELETE OR GAME WILL CRASH/dontDelete.webm";
-        
-        #if web
-        var str1:String = "HTML CRAP";
-        var vHandler = new VideoHandler();
-        vHandler.init1();
-        vHandler.video.name = str1;
-        addChild(vHandler.video);
-        vHandler.init2();
-        GlobalVideo.setVid(vHandler);
-        vHandler.source(ourSource);
-        #elseif desktop
-		WebmPlayer.SKIP_STEP_LIMIT = 90; //haxelib git extension-webm https://github.com/ThatRozebudDude/extension-webm
-        var str1:String = "WEBM SHIT"; 
-        var webmHandle = new WebmHandler();
-        webmHandle.source(ourSource);
-        webmHandle.makePlayer();
-        webmHandle.webm.name = str1;
-        addChild(webmHandle.webm);
-        GlobalVideo.setWebm(webmHandle);
-        #end 
-
-		#if !mobile
+		addChild(new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
+		
+		FlxG.signals.preStateSwitch.add(function () {
+				Paths.clearStoredMemory(true);
+				FlxG.bitmap.dumpCache();
+		});
+		FlxG.signals.postStateSwitch.add(function () {
+			Paths.clearUnusedMemory();
+		});
+		
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsCounter);
 		toggleFPS(FlxG.save.data.fps);
 
+		#if android
+		FlxG.android.preventDefaultKeys = [BACK];
 		#end
 	}
-
-	var game:FlxGame;
 
 	var fpsCounter:FPS;
 
