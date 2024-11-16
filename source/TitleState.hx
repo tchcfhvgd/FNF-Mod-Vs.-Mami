@@ -53,14 +53,9 @@ class TitleState extends MusicBeatState
 	{
 		
 		#if sys
-		if (!sys.FileSystem.exists(Sys.getCwd() + "/assets/replays"))
-			sys.FileSystem.createDirectory(Sys.getCwd() + "/assets/replays");
+		if (!sys.FileSystem.exists("assets/replays"))
+			sys.FileSystem.createDirectory("assets/replays");
 		#end
-
-		@:privateAccess
-		{
-			trace("Loaded " + openfl.Assets.getLibrary("default").assetsLoaded + " assets (DEFAULT)");
-		}
 		
 		PlayerSettings.init();
 
