@@ -61,7 +61,7 @@ import openfl.filters.ColorMatrixFilter;
 #if windows
 import Discord.DiscordClient;
 #end
-#if desktop
+#if sys
 import Sys;
 import sys.FileSystem;
 #end
@@ -829,8 +829,9 @@ class PlayState extends MusicBeatState
 					whiteBG.alpha = 0.0;
 					add(whiteBG);
 
-					gunSwarmBack = new FlxBackdrop(Paths.image('mami/BG/HOLY/HOLY_gunsbackconstant'), 1, 0, true, true);
+					gunSwarmBack = new FlxBackdrop(Paths.image('mami/BG/HOLY/HOLY_gunsbackconstant'), XY);
 					gunSwarmBack.scrollFactor.set(0.8, 0);
+				        gunSwarmBack.x = 1;
 					add(gunSwarmBack);
 					gunSwarmBack.velocity.set(-8500, 1500);
 					gunSwarmBack.alpha = 0.0;
@@ -878,8 +879,9 @@ class PlayState extends MusicBeatState
 					gunSwarm.updateHitbox();
 					gunSwarm.active = true;
 
-					gunSwarmFront = new FlxBackdrop(Paths.image('mami/BG/HOLY/HOLY_gunsfrontconstant'), 1, 0, true, true);
-					gunSwarmFront.scrollFactor.set(1.1, 0);
+					gunSwarmFront = new FlxBackdrop(Paths.image('mami/BG/HOLY/HOLY_gunsfrontconstant'), XY);
+					gunSwarmFront.x = 1;
+				        gunSwarmFront.scrollFactor.set(1.1, 0);
 
 					darknessOverlay = new FlxSprite(-480, -480).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), 0xFF21102b);
 					darknessOverlay.updateHitbox();
